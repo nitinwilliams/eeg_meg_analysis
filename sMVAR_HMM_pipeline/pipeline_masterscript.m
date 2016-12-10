@@ -1,6 +1,6 @@
 % below is code to run pipeline on two subjects from BCI oddball task.
 %
-% please adapt code for your purposes after adding relevant
+% please adapt code for your purposes after adding pipeline
 % folders/functions to current working directory
 
 clear;
