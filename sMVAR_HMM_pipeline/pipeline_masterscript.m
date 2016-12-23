@@ -18,8 +18,8 @@ parpool(P);
 %% Load data
 
 bci_strings={'bcidata_6C_3D','bcidata2_6C_3D'};
-k=[2:8];        % samples for baseline window
-numcycs=1000;   % samples per trial
+k=[2:8];        % range of k-values, where 'k' is number of states
+numcycs=1000;   % number of replications for permutation-based hypothesis tests
 
 CA_nd=repmat({NaN(length(bci_strings),length(k))},[numcycs,1]);
 MD_nd=repmat({NaN(length(bci_strings),length(k))},[numcycs,1]);
