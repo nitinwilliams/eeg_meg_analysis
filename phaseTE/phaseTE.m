@@ -1,6 +1,6 @@
 function pTE=phaseTE(Xf,lag)
 % Inputs:
-% Xf is 2D matrix, i.e. channels x samples
+% Xf is 2D matrix of instantaneous phases, i.e. channels x samples
 % lag is the expected delay, expressed in samples
 % Outputs:
 % pTE(1,2) is phase TE from 1 to 2
@@ -9,14 +9,10 @@ function pTE=phaseTE(Xf,lag)
 % Function written by Nitin Williams, with help from Felix Siebenhuehner and Muriel Lobier 
 %
 %
-%% Inst. phase
-
-Xfh=angle(hilbert(Xf'))';
-
 %% Number of bins
 
-for idx=1:size(Xfh,1),
-    [~,dirsd(idx,1)]=circ_std(Xfh(idx,:),[],[],2);
+for idx=1:size(Xf,1),
+    [~,dirsd(idx,1)]=circ_std(Xf(idx,:),[],[],2);
 end
 
 N=size(Xf,2);
