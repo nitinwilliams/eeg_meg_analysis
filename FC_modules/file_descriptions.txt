@@ -1,0 +1,32 @@
+NOTE: Add main folder and sub-folders to path, before running
+
+1.) FCzd_wconnectome_PARC2K9_allfreqs.m - Generates group-level connectome from SEEG recordings of individual subjects
+
+2.) FCzd_singleslice_singlehem_tCS_Louvain_multgvals.m - Identify modules from group-level connectome of single hemisphere
+Requires output from: FCzd_wconnectome_PARC2K9_allfreqs.m
+
+3.) FCzd_Tconnectome_communitystructure_Qanalysis.m - Estimates z-scored modularity of generated connectomes of single hemisphere
+Requires output from: FCzd_wconnectome_PARC2K9_allfreqs.m
+
+4.) FCzd_wconnectome_PARC2k9_allfreqs_surrogates.m - Generates surrogate group-level connectome from SEEG recordings of individual subjects
+
+5.) FCzd_singleslice_singlehem_tCS_Louvain_parcelstability_parc2k9.m - Estimates module assignment stability of individual brain regions and their corresponding null distributions, for single hemisphere
+Requires output from: FCzd_singleslice_singlehem_tCS_Louvain_multgvals.m, FCzd_wconnectome_PARC2k9_allfreqs_surrogates.m
+
+6.) FC_singleslice_singlehem_tCS_Louvain_parcelstability_summary.m - Estimates percentages of brain regions with statistically significant stability of module assignment
+Requires output from: FCzd_singleslice_singlehem_tCS_Louvain_parcelstability_parc2k9.m 
+
+7.) FCzd_singleslice_singlehem_PS_Louvain_multgvals.m - Generates matrices of modules similarity between each pairwise combination of frequencies for single hemisphere
+Requires output from: FCzd_singleslice_singlehem_tCS_Louvain_multgvals.m
+
+8.) FCzd_CS_freqband_clustering_multislice.m - Identifies groups of frequencies with highly similar modules, common to both left and right hemispheres
+Requires output from: FCzd_singleslice_singlehem_PS_Louvain_multgvals.m 
+
+9.) FCzd_singleslice_singlehem_CS_CP_Louvain_multgvals.m - Identifies modules of frequency groups by combining modules at individual frequencies, for single hemisphere
+Requires output from: FCzd_singleslice_singlehem_tCS_Louvain_multgvals.m, FCzd_CS_freqband_clustering_multislice.m 
+
+10.) FCzd_singleslice_singlehem_CS_Louvain_CB.m - Generates consensus matrices of modules identified across the range of gamma value and frequencies, for single hemisphere
+Requires output from: FCzd_singleslice_singlehem_tCS_Louvain_multgvals.m
+
+11.) FCzd_CS_CB_freqband_clustering_multislice.m - Identifies consensus modules of modules identified across the range of gamma values and frequencies, common to both left and right hemispheres
+Requires output from: FCzd_singleslice_singlehem_CS_Louvain_CB.m
