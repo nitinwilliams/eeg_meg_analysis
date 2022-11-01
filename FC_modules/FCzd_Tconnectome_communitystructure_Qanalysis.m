@@ -1,4 +1,9 @@
 clear;
+rmpath(genpath('C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\'));
+addpath(genpath('C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\GA_data\'));
+addpath(genpath('C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\GA_figs\'));
+addpath(genpath('C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\BCT\'));
+addpath('C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\GA_code\GA_code\Connectome_estimation\FC_code\submission\');
 
 %% Initialisation
 
@@ -33,11 +38,11 @@ validxs=find(UTMASK>0);
 
 for fidx=1:length(Nfvec),
     
-    Nf=Nfvec(fidx);
-    fname=strcat('PLVmats_rdtmask_',Nf{1,1},'Hz_thr',int2str(nct),'_67subs_parc2k9_wgroupmat.mat');
-    load(fname,'PLVmats_groupmat');
-    D=PLVmats_groupmat(lefthem_idxs,lefthem_idxs);
-    D(1:numparcs+1:end)=0;
+   Nf=Nfvec(fidx);
+   fname=strcat('PLVmats_rdtmask_',Nf{1,1},'Hz_thr',int2str(nct),'_67subs_parc2k9_wgroupmat.mat');
+   load(fname,'PLVmats_groupmat');
+   D=PLVmats_groupmat(lefthem_idxs,lefthem_idxs);
+   D(1:numparcs+1:end)=0;
     
    % thresholding networks
    
@@ -67,20 +72,20 @@ for freqidx=1:length(Nfvec),
     parfor gamidx=1:length(gammavec),
         
         gamma=gammavec(gamidx);
-        [QVEC(gamidx),NMAT(freqidx,gamidx)]=partitionquality_mv_ss(A,gamma);
+        [QVEC(gamidx),NMAT(freqidx,gamidx)]=partitionquality_ss(A,gamma);
           
     end
 
     %% determining partition quality null distribution 
 
-    for repidx=1:reps,
+    for repidx=1:reps
     
         A_ND=randomise_und_ensemble(A); 
 
-        parfor gamidx=1:length(gammavec),
+        parfor gamidx=1:length(gammavec)
         
             gamma=gammavec(gamidx);
-            QMATND(freqidx,gamidx,repidx)=partitionquality_mv_ss(A_ND,gamma);
+            QMATND(freqidx,gamidx,repidx)=partitionquality_ss(A_ND,gamma);
             
         end
            
@@ -94,8 +99,19 @@ for freqidx=1:length(Nfvec),
     zQMAT(freqidx,:)=(QVEC-mean(ND))./std(ND);
     mQMAT(freqidx,:)=(QVEC-mean(ND));
 
-    display(freqidx);
+    disp(freqidx);
 
 end
 
 save(['C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\GA_data\submission\parc2k9_67subs_pct' num2str(pctval) '_Qanalysis_lefthem.mat'],'NMAT','QMAT','zQMAT','mQMAT');
+
+%% Plotting
+
+figure;
+imagesc(zQMAT,[0,20]);
+colorbar;
+xlabel('Gamma');
+ylabel('Frequency (Hz)');
+set(gca,'YDir','normal','XTick',[1:4:length(gammavec)],'XTickLabel',gammavec(1:4:end),'YTick',[1:length(Nfvec)],'YTickLabel',Nfvec);
+set(gcf,'Position',[300,300,1000,750]);
+saveas(gcf,'C:\Users\willian1\OneDrive - Aalto University\Previous_projects\Nitin\HBPconnectome\GA_figs\zQMAT_parc2k9_67subs_Qanalysis_lefthem','png');
