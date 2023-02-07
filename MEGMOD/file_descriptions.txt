@@ -1,0 +1,80 @@
+NOTE: Add main folder and sub-folders to path, before running
+
+OVERVIEW: 1a-c are called by SLURM scripts to simulate each of the three BNMs several times on HPC resources, 
+2 collates the results from 1a-c to generate input for BOLFI model fitting, 3a-c performs BOLFI fitting of each of the
+three BNMs, 4 places posterior distributions of three BNMs returned by BOLFI in the correct order and scale, 5a-c 
+are called by SLURM scripts to simulate each of the three BNMs at their posterior distributions on HPC resources,
+6 uses results from 5a-c to perform ABC model comparison of BNMs with isochronos, mixed and distance-dependent delays.
+
+1a) WCnet_isochronousdelays_noisy_simulations.m 
+     MATLAB function called by SLURM script array_job_script_WCnetnoisy_isochronousdelays_10Ksims.slrm to run simulations of BNM with isochronous delays (on HPC resources)
+       Requires:
+        - WCnet_noisy_isochronousdelays_paramcombinations.mat - matrix of sets of parameter values for simulations of BNM with isochronous delays
+
+1b) WCnet_mixeddelays_noisy_simulations.m 
+     MATLAB function called by SLURM script array_job_script_WCnetnoisy_mixeddelays_10Ksims.slrm to run simulations of BNM with mixed delays (on HPC resources)
+        Requires:
+        - WCnet_noisy_mixeddelays_paramcombinations.mat -  matrix of sets of parameter values for simulations of BNM with mixed delays
+        - mnicoords_destrieux.mat - 3-D coordinates of centroids of brain regions in Destrieux atlas, in MNI space
+
+1c) WCnet_variabledelays_noisy_simulations.m 
+     MATLAB function called by SLURM script array_job_script_WCnetnoisy_variabledelays_10Ksims.slrm to run simulations of BNM with distance-dependent delays (on HPC resources)
+        Requires:
+        - WCnet_noisy_variabledelays_paramcombinations.mat - matrix of sets of parameter values for simulations of BNM with distance-dependent delays
+        - mnicoords_destrieux.mat - 3-D coordinates of centroids of brain regions in Destrieux atlas, in MNI space
+
+          1a-c also require:
+        - avg_sc.mat - Structural connectome matrix
+        - source2parc.mat - cell array comprising subject-specific vectors assigning each dipole to a brain region 
+        - fwd_mat.mat - cell array comprising subject-specific matrices of forward operators relating brain activity to MEG sensor activity
+        - inv_mat.mat - cell array comprising subject-specific matrices of inverse operators relating MEG sensor activity to brain activity
+        - PY2LV_transvec.mat - vector specifying translation of source2parc, fwd_mat and inv_mat to space of Structural Connectome matrix
+          (adapt code if PY2LV_transvec not required)
+
+2) GPfitting_1DSSI_discrepancyvector_generation.m
+    MATLAB code generating set of discrepancy values (Y) and associated matrix of z-scored parameter values (X) to be used for BOLFI model fitting
+    (code is currently written for BNM with mixed delays, can be adapted for BNMs with isochronous and distance-dependent delays)
+
+3a) BOLFI_13params_isochronousdelaysmodel_expMEGdata_SSIlogdist_standarsided.py
+     Python code using BOLFI to fit BNM with isochronous delays to experimental MEG data
+
+3b) BOLFI_14params_mixeddelaysmodel_expMEGdata_SSIlogdist_standardised.py
+     Python code using BOLFI to fit BNM with mixed delays to experimental MEG data
+
+3c) BOLFI_12params_distancedependentdelaysmodel_expMEGdata_SSIlogdist_standardised.py
+     Python code using BOLFI to fit BNM with distance-dependent delays to experimental MEG data
+
+4) posterior_distributions_2ksims.m
+    MATLAB code generating posterior distributions with the correct order and scale, to be used for posterior predictive checks and ABC model comparison
+    (generates posterior distributions of parameters of BNMs with isochronous delays, mixed delays and distance-dependent delays) 
+
+5a) WCnet_isochronousdelays_noisy_posteriorpredictivechecks.m
+     MATLAB function called by SLURM script array_job_script_WCnetnoisy_isochronousdelays.slrm to simulate BNM with isochronous delays at posterior distribution (with HPC resources)
+    (files saved by the MATLAB function can be used for model comparison)
+        Requires:
+            - WCnet_noisy_isochronousdelays_posteriordistribution.mat - posterior distribution of BNM with isochronous delays
+
+5b) WCnet_mixeddelays_noisy_posteriorpredictivechecks.m
+     MATLAB function called by SLURM script array_job_script_WCnetnoisy_mixeddelays.slrm to simulate BNM with mixed delays at posterior distribution (with HPC resources)
+    (files saved by the MATLAB function can be used for model comparison)
+        Requires:
+            - WCnet_noisy_mixeddelays_posteriordistribution.mat - posterior distribution of BNM with mixed delays
+            - mnicoords_destrieux.mat - 3-D coordinates of centroids of brain regions in Destrieux atlas, in MNI space
+
+5c) WCnet_variabledelays_noisy_posteriorpredictivechecks.m
+     MATLAB function called by SLURM script array_job_script_WCnetnoisy_variabledelays.slrm to simulate BNM with distance-dependent delays at posterior distribution (with HPC resources)
+    (files saved by the MATLAB function can be used for model comparison)
+        Requires:
+            - WCnet_noisy_distancedependentdelays_posteriordistribution.mat - posterior distribution of BNM with distance-dependent delays
+            - mnicoords_destrieux.mat - 3-D coordinates of centroids of brain regions in Destrieux atlas, in MNI space
+
+        5a-c also require:
+        - avg_sc.mat - Structural connectome matrix
+        - source2parc.mat - cell array comprising subject-specific vectors assigning each dipole to a brain region 
+        - fwd_mat.mat - cell array comprising subject-specific matrices of forward operators relating brain activity to MEG sensor activity
+        - inv_mat.mat - cell array comprising subject-specific matrices of inverse operators relating MEG sensor activity to brain activity
+        - PY2LV_transvec.mat - vector specifying translation of source2parc, fwd_mat and inv_mat to space of Structural Connectome matrix
+          (adapt code if PY2LV_transvec not required)
+
+6) ABC_modelcomparison.m 
+    MATLAB code to perform ABC model comparison of BNMs with isochronous delays, mixed delays and distance-dependent delays
