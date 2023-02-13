@@ -1,2 +1,2 @@
 # eeg_meg_analysis
-MATLAB and Python code relating to analyses and modelling human electrophysiological data 
+MATLAB and Python code for analyses and modelling human ephys data 
